@@ -77,7 +77,7 @@ class Plate():
             self.step(t)
 
 
-    def export_sparse(self, points, filename):
+    def export_sparse(self, points, filename, step=1):
         """
         Export the temperature data at specified points for all time steps to a CSV file.
         Parameters
@@ -86,12 +86,14 @@ class Plate():
             A list of (x, y) coordinates where the temperature data should be extracted.
         filename : str
             The name of the CSV file to which the data will be exported.
+        step : int, optional
+            Export every nth time step (default is 1, meaning all time steps).
         """
         import pandas as pd
-        
+
         data = []
         for i, (x, y) in enumerate(points):
-            for t in range(self.nt):
+            for t in range(0, self.nt, step):
                 time = t * self.dt
                 # Convert physical coordinates to grid indices
                 ix = int(round((x + self.size / 2) / self.dx))
@@ -103,7 +105,7 @@ class Plate():
                     'y': y,
                     'temperature': self.temperature[t, iy, ix]
                 })
-        
+
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
 
@@ -230,10 +232,14 @@ if __name__ == "__main__":
         (-0.5, -0.25),
         (0.45, 0.35),
         (0.25, -0.45),
-        (0,0)
+        (0,0),
+        (-0.75, 0.75),
+        (0.75, -0.75),
+        (0.75, 0.75),
+        (-0.75, -0.75)
     ]
 
     plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, spatial_step)
     plate.run()
-    plate.export_sparse(thermocouple_locations, 'training_data/dual_gaussian.csv')
+    plate.export_sparse(thermocouple_locations, 'training_data/dual_gaussian.csv', step=6)
     plate.animate(points=thermocouple_locations)
