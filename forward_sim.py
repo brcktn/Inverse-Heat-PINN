@@ -225,7 +225,7 @@ def dual_gaussian_initial_temperature(size, nxy):
 if __name__ == "__main__":
     size = 2.0
     t_max = 5.0
-    alpha = 0.3
+    alpha = 0.01
     spatial_step = 0.02
 
     thermocouple_locations = [
