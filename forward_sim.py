@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 
 class Plate():
-    def __init__(self, initial_temperature, size, t_max, alpha, spatial_step, Fo=0.2):
+    def __init__(self, initial_temperature, size, t_max, alpha, spatial_step, nt):
         """
         Initialize a a 2D plate for forward simulation of the heat equation.
 
@@ -18,24 +18,30 @@ class Plate():
             The thermal diffusivity of the material.
         spatial_step : float
             The target spatial step size (distance between grid points).
-        Fo : float, optional
-            The desired Fourier number (default is 0.2).
-            <= 0.25 is required for numerical stability
+        nt : int
+            The number of time steps for the simulation.
         """
         self.initial_temperature = initial_temperature
         self.size = size
         self.t_max = t_max
         self.alpha = alpha
-        
+
         # Calculate nx from spatial_step
         self.nx = int(size / spatial_step) + 1
         self.dx = size / (self.nx - 1)
 
-        # Calculate dt such that Fo = 0.2
-        self.dt = Fo * self.dx**2 / alpha
-        
-        # Calculate nt from dt
-        self.nt = int(t_max / self.dt) + 1
+        # Calculate dt from nt
+        self.dt = t_max / (nt - 1)
+        self.nt = nt
+
+        # Check numerical stability: Fo = alpha * dt / dx^2 must be <= 0.25
+        Fo = alpha * self.dt / (self.dx**2)
+        if Fo > 0.25:
+            raise ValueError(
+                f"Fourier number {Fo:.6f} exceeds stability limit of 0.25. "
+                f"To fix: reduce nt (currently {nt}), increase spatial_step (currently {spatial_step}), "
+                f"or increase alpha (currently {alpha})."
+            )
 
         self.temperature = np.zeros((self.nt, self.nx, self.nx), dtype=float)
         self.temperature[0] = self.initial_temperature(size, self.nx)
@@ -86,11 +92,9 @@ class Plate():
             A list of (x, y) coordinates where the temperature data should be extracted.
         filename : str
             The name of the CSV file to which the data will be exported.
-        step : int, optional
-            Export every nth time step (default is 1, meaning all time steps).
         """
         import pandas as pd
-
+        
         data = []
         for i, (x, y) in enumerate(points):
             for t in range(0, self.nt, step):
@@ -105,7 +109,7 @@ class Plate():
                     'y': y,
                     'temperature': self.temperature[t, iy, ix]
                 })
-
+        
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
 
@@ -227,19 +231,20 @@ if __name__ == "__main__":
     t_max = 5.0
     alpha = 0.01
     spatial_step = 0.02
+    nt = 18750  # Produces ~3126 exported time steps with step=6
 
     thermocouple_locations = [
+        (0,0),
         (-0.5, -0.25),
         (0.45, 0.35),
         (0.25, -0.45),
-        (0,0),
+        (0.75, 0.75),
         (-0.75, 0.75),
         (0.75, -0.75),
-        (0.75, 0.75),
         (-0.75, -0.75)
     ]
 
-    plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, spatial_step)
+    plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, spatial_step, nt)
     plate.run()
     plate.export_sparse(thermocouple_locations, 'training_data/dual_gaussian.csv', step=6)
     plate.animate(points=thermocouple_locations)
