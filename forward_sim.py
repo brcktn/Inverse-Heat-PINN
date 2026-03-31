@@ -113,11 +113,13 @@ class Plate():
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
 
-    def export_large(self, xy_step=1, t_step=1):
+    def export_large(self, filename,xy_step=1, t_step=1):
         """
         Export the full temperature data for all grid points and time steps to a CSV file.
         Parameters
         ----------
+        filename : str
+            The name of the CSV file to which the data will be exported.
         xy_step : int, optional
             The step size for spatial sampling (default is 1, which means no downsampling).
         t_step : int, optional
@@ -133,6 +135,7 @@ class Plate():
                 for iy in range(0, self.nx, xy_step):
                     y = -self.size / 2 + iy * self.dx
                     data.append({
+                        'sensor_id': 0,
                         'time': time,
                         'x': x,
                         'y': y,
@@ -140,7 +143,7 @@ class Plate():
                     })
         
         df = pd.DataFrame(data)
-        df.to_csv('full_temperature_data.csv', index=False)
+        df.to_csv(filename, index=False)
 
 
     def animate(self, points=None):
@@ -259,8 +262,8 @@ if __name__ == "__main__":
     size = 2.0
     t_max = 5.0
     alpha = 0.01
-    spatial_step = 0.02
-    nt = 18751  # Produces ~3125 exported time steps with step=6
+    spatial_step = 0.02 # nx = 101
+    nt = 18751  # w/ step=6, gives dt = 0.0016
 
     thermocouple_locations = [
         (0,0),
@@ -273,7 +276,8 @@ if __name__ == "__main__":
         (-0.75, -0.75)
     ]
 
-    plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, spatial_step, nt)
+    plate = Plate(gaussian_initial_temperature, size, t_max, alpha, spatial_step, nt)
     plate.run()
-    plate.export_sparse(thermocouple_locations, 'training_data/dual_gaussian.csv', step=6)
+    plate.export_sparse(thermocouple_locations, 'training_data/gaussian.csv', step=6)
+    # plate.export_large("training_data/capacity_test.csv", xy_step=10, t_step=6)
     plate.animate(points=thermocouple_locations)
