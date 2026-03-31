@@ -113,6 +113,35 @@ class Plate():
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
 
+    def export_large(self, xy_step=1, t_step=1):
+        """
+        Export the full temperature data for all grid points and time steps to a CSV file.
+        Parameters
+        ----------
+        xy_step : int, optional
+            The step size for spatial sampling (default is 1, which means no downsampling).
+        t_step : int, optional
+            The step size for time sampling (default is 1, which means no downsampling).
+        """
+        import pandas as pd
+        
+        data = []
+        for t in range(0, self.nt, t_step):
+            time = t * self.dt
+            for ix in range(0, self.nx, xy_step):
+                x = -self.size / 2 + ix * self.dx
+                for iy in range(0, self.nx, xy_step):
+                    y = -self.size / 2 + iy * self.dx
+                    data.append({
+                        'time': time,
+                        'x': x,
+                        'y': y,
+                        'temperature': self.temperature[t, iy, ix]
+                    })
+        
+        df = pd.DataFrame(data)
+        df.to_csv('full_temperature_data.csv', index=False)
+
 
     def animate(self, points=None):
         """
@@ -231,7 +260,7 @@ if __name__ == "__main__":
     t_max = 5.0
     alpha = 0.01
     spatial_step = 0.02
-    nt = 18750  # Produces ~3126 exported time steps with step=6
+    nt = 18751  # Produces ~3125 exported time steps with step=6
 
     thermocouple_locations = [
         (0,0),
