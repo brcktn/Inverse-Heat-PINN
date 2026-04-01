@@ -104,9 +104,9 @@ class Plate():
                 iy = int(round((y + self.size / 2) / self.dx))
                 data.append({
                     'sensor_id': i,
-                    'time': time,
                     'x': x,
                     'y': y,
+                    'time': time,
                     'temperature': self.temperature[t, iy, ix]
                 })
         
@@ -136,9 +136,9 @@ class Plate():
                     y = -self.size / 2 + iy * self.dx
                     data.append({
                         'sensor_id': 0,
-                        'time': time,
                         'x': x,
                         'y': y,
+                        'time': time,
                         'temperature': self.temperature[t, iy, ix]
                     })
         
@@ -276,8 +276,9 @@ if __name__ == "__main__":
         (-0.75, -0.75)
     ]
 
-    plate = Plate(gaussian_initial_temperature, size, t_max, alpha, spatial_step, nt)
+    plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, spatial_step, nt)
     plate.run()
-    plate.export_sparse(thermocouple_locations, 'training_data/gaussian.csv', step=6)
+    plate.export_sparse(thermocouple_locations, 'training_data/dual_gaussian.csv', step=6)
+    # plate.export_sparse(thermocouple_locations, 'training_data/gaussian.csv', step=6)
     # plate.export_large("training_data/capacity_test.csv", xy_step=10, t_step=6)
     plate.animate(points=thermocouple_locations)
