@@ -258,6 +258,33 @@ def dual_gaussian_initial_temperature(size, nxy):
     return gaussian1 + gaussian2
 
 
+def square_step_initial_temperature(size, nxy):
+    """
+    Initial temperature distribution: a square step function in the center of the plate.
+
+    Parameters
+    ----------
+    size : float
+        The physical size of the plate (length of one side).
+    nxy : int
+        The number of grid points in each spatial dimension.
+
+    Returns
+    -------
+    np.ndarray
+        A 2D array of shape (nxy, nxy) representing the initial temperature distribution on the plate.
+    """
+    temperature = np.zeros((nxy, nxy), dtype=float)
+    half_square_size = size / 4
+    for i in range(nxy):
+        for j in range(nxy):
+            x = -size/2 + i * (size / (nxy - 1))
+            y = -size/2 + j * (size / (nxy - 1))
+            if abs(x) < half_square_size and abs(y) < half_square_size:
+                temperature[j, i] = 1.0  # Note: j is the row index, i is the column index
+    return temperature
+
+
 if __name__ == "__main__":
     size = 2.0
     t_max = 5.0
@@ -276,9 +303,8 @@ if __name__ == "__main__":
         (-0.75, -0.75)
     ]
 
-    plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, spatial_step, nt)
+    plate = Plate(square_step_initial_temperature, size, t_max, alpha, spatial_step, nt)
     plate.run()
-    plate.export_sparse(thermocouple_locations, 'training_data/dual_gaussian.csv', step=6)
-    # plate.export_sparse(thermocouple_locations, 'training_data/gaussian.csv', step=6)
-    # plate.export_large("training_data/capacity_test.csv", xy_step=10, t_step=6)
+    plate.export_sparse(thermocouple_locations, 'training_data/square_step.csv', step=6)
+    # plate.export_sparse(thermocouple_locations, 'training_data/dual_gaussian.csv', step=6)
     plate.animate(points=thermocouple_locations)
