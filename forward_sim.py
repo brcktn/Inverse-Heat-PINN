@@ -83,7 +83,7 @@ class Plate():
             self.step(t)
 
 
-    def export_sparse(self, points, filename, step=1):
+    def export_sparse(self, points, filename, step=1, noise_std=0.0):
         """
         Export the temperature data at specified points for all time steps to a CSV file.
         Parameters
@@ -107,7 +107,7 @@ class Plate():
                     'x': x,
                     'y': y,
                     'time': time,
-                    'temperature': self.temperature[t, iy, ix]
+                    'temperature': self.temperature[t, iy, ix] + np.random.normal(0, noise_std)
                 })
         
         df = pd.DataFrame(data)
@@ -291,6 +291,7 @@ if __name__ == "__main__":
     alpha = 0.01
     spatial_step = 0.02 # nx = 101
     nt = 18751  # w/ step=6, gives dt = 0.0016
+    noise_std = 0.01
 
     thermocouple_locations = [
         (0,0),
@@ -299,7 +300,7 @@ if __name__ == "__main__":
         (0.25, -0.45),
     ]
 
-    plate = Plate(square_step_initial_temperature, size, t_max, alpha, spatial_step, nt)
+    plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, spatial_step, nt)
     plate.run()
     plate.export_sparse(thermocouple_locations, 'training_data/dual_gaussian_4.csv', step=6)
     plate.animate(points=thermocouple_locations)
