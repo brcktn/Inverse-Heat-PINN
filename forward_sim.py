@@ -297,14 +297,9 @@ if __name__ == "__main__":
         (-0.5, -0.25),
         (0.45, 0.35),
         (0.25, -0.45),
-        (0.75, 0.75),
-        (-0.75, 0.75),
-        (0.75, -0.75),
-        (-0.75, -0.75)
     ]
 
     plate = Plate(square_step_initial_temperature, size, t_max, alpha, spatial_step, nt)
     plate.run()
-    plate.export_sparse(thermocouple_locations, 'training_data/square_step.csv', step=6)
-    # plate.export_sparse(thermocouple_locations, 'training_data/dual_gaussian.csv', step=6)
+    plate.export_sparse(thermocouple_locations, 'training_data/dual_gaussian_4.csv', step=6)
     plate.animate(points=thermocouple_locations)
