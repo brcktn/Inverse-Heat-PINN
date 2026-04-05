@@ -157,41 +157,54 @@ class Plate():
         """
         import matplotlib.pyplot as plt
         from matplotlib.widgets import Slider
-        
+
         fig, ax = plt.subplots()
         plt.subplots_adjust(bottom=0.25)  # Make room for the slider
-        
+
+        # Create coordinate grids for contour plot
+        x = np.linspace(-self.size/2, self.size/2, self.nx)
+        y = np.linspace(-self.size/2, self.size/2, self.nx)
+        X, Y = np.meshgrid(x, y)
+
         # Plot initial frame to set up the colorbar and axes
-        extent = [-self.size/2, self.size/2, -self.size/2, self.size/2]
-        im = ax.imshow(self.temperature[0], cmap='hot', vmin=self.temperature.min(), vmax=self.temperature.max(), extent=extent, origin='lower')
+        contour = ax.contourf(X, Y, self.temperature[0], levels=20, cmap='hot', vmin=self.temperature.min(), vmax=self.temperature.max())
         ax.set_xlabel('x')
         ax.set_ylabel('y')
-        plt.colorbar(im, ax=ax)
+        ax.set_aspect('equal')
+        cbar = plt.colorbar(contour, ax=ax)
 
         # Plot points if provided
         if points is not None:
             px, py = zip(*points)
             ax.scatter(px, py, color='cyan', marker='x', label='Sensors')
-        
+
         # Add a slider for time control
         ax_slider = plt.axes([0.15, 0.1, 0.7, 0.03])
         max_time = (self.nt - 1) * self.dt
         slider = Slider(ax_slider, '', 0, max_time, valinit=0, valstep=self.dt)
         ax_slider.set_xlabel('Time')
-        
+
         def update_plot(val):
             # The slider is the "source of truth" for the current frame
             frame = int(round(val / self.dt))
-            im.set_data(self.temperature[frame])
+            ax.clear()
+            contour = ax.contourf(X, Y, self.temperature[frame], levels=20, cmap='hot', vmin=self.temperature.min(), vmax=self.temperature.max())
+            ax.set_xlabel('x')
+            ax.set_ylabel('y')
+            ax.set_aspect('equal')
             ax.set_title(f'Temperature at t={val:.4f}')
+            # Plot points if provided
+            if points is not None:
+                px, py = zip(*points)
+                ax.scatter(px, py, color='cyan', marker='x', label='Sensors')
             fig.canvas.draw_idle()
 
         slider.on_changed(update_plot)
-        
+
         # Keep reference to prevent garbage collection
         self._slider = slider
         self._ax_slider = ax_slider
-        
+
         plt.show(block=True)
 
 
