@@ -49,7 +49,7 @@ class Plate():
         self.temperature[0] = self.initial_temperature(size, self.nx)
 
     
-    def step(self, t, k_thermal=1.0):
+    def step(self, t):
         """
         Perform a single time step of the forward simulation using the FTCS
         finite difference method. Vectorized for performance.
@@ -64,7 +64,7 @@ class Plate():
         T = self.temperature[t]
         T_new = np.copy(T)
         
-        grad = -self.q / k_thermal  # dT/dn = -q/k
+        grad = -self.q / self.alpha  # dT/dn = -q/alpha
 
         # Interior points (unchanged)
         d2T_dx2 = (T[1:-1, 2:] - 2 * T[1:-1, 1:-1] + T[1:-1, :-2]) / (self.dx**2)        
@@ -332,7 +332,7 @@ if __name__ == "__main__":
     size = 2.0
     t_max = 5.0
     alpha = 0.01
-    q = 0.1
+    q = 0.005
     spatial_step = 0.02 # nx = 101
     nt = 18751  # w/ step=6, gives dt = 0.0016
     noise_std = 0.01
