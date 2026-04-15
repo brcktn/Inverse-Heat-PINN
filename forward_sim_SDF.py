@@ -3,6 +3,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.widgets import Slider
+import matplotlib.colors as colors
 
 class Plate:
     def __init__(self, size, SDF, initial_temp, t_max, alpha, spatial_step, nt):
@@ -108,92 +109,95 @@ class Plate:
             self.step(t)
 
 
-    def visualize(self, step=None, figsize=(8, 6), cmap='hot', sensors=None):
-        """
-        Visualizes the temperature distribution at a given time step.
-        If no step is given, shows an animation across all time steps.
+        def visualize(self, step=None, figsize=(8, 6), cmap='hot', sensors=None):
+            """
+            Visualizes the temperature distribution at a given time step.
+            If no step is given, shows an animation across all time steps.
 
-        Parameters
-        ----------
-        step : int or None
-            Time step to visualize. If None, animates all steps.
-        figsize : tuple
-            Figure size in inches.
-        cmap : str
-            Matplotlib colormap name.
-        sensors : list of tuples, optional
-            List of (x, y) coordinates for thermocouple/sensor locations.
-        """
-        # Mask outside cells as NaN so they render transparently
-        def masked(t):
-            frame = self.temperature[t].copy().astype(float)
-            frame[~self.shape_mask] = np.nan
-            return frame
+            Parameters
+            ----------
+            step : int or None
+                Time step to visualize. If None, animates all steps.
+            figsize : tuple
+                Figure size in inches.
+            cmap : str
+                Matplotlib colormap name.
+            sensors : list of tuples, optional
+                List of (x, y) coordinates for thermocouple/sensor locations.
+            """
+            # Mask outside cells as NaN so they render transparently
+            def masked(t):
+                frame = self.temperature[t].copy().astype(float)
+                frame[~self.shape_mask] = np.nan
+                return frame
 
-        vmin = np.nanmin(self.temperature[0])
-        vmax = np.nanmax(self.temperature[0])
-        extent = [-self.size/2, self.size/2, -self.size/2, self.size/2]
+            vmin = 0.0
+            vmax = 100.0
+            extent = [-self.size/2, self.size/2, -self.size/2, self.size/2]
 
-        # Configure colormap to render NaN values (outside boundary) as black
-        cmap_obj = plt.get_cmap(cmap).copy()
-        cmap_obj.set_bad(color='black')
-
-        if step is not None:
-            # Single frame
-            fig, ax = plt.subplots(figsize=figsize)
-            im = ax.imshow(masked(step), origin='lower', extent=extent,
-                        cmap=cmap_obj, vmin=vmin, vmax=vmax)
-            plt.colorbar(im, ax=ax, label='Temperature')
-            t_val = step * self.dt
-            ax.set_title(f't = {t_val:.4f}')
-            ax.set_xlabel('x')
-            ax.set_ylabel('y')
+            # Configure colormap to render NaN values (outside boundary) as black
+            cmap_obj = plt.get_cmap(cmap).copy()
+            cmap_obj.set_bad(color='black')
             
-            if sensors is not None:
-                sx, sy = zip(*sensors)
-                ax.scatter(sx, sy, color='cyan', marker='x', s=50, label='Thermocouples')
-                ax.legend()
+            # We apply a PowerNorm using gamma < 1 to dynamically spread the colors over the lower values
+            norm = colors.PowerNorm(gamma=0.5, vmin=vmin, vmax=vmax)
+
+            if step is not None:
+                # Single frame
+                fig, ax = plt.subplots(figsize=figsize)
+                im = ax.imshow(masked(step), origin='lower', extent=extent,
+                            cmap=cmap_obj, norm=norm)
+                plt.colorbar(im, ax=ax, label='Temperature')
+                t_val = step * self.dt
+                ax.set_title(f't = {t_val:.4f}')
+                ax.set_xlabel('x')
+                ax.set_ylabel('y')
                 
-            plt.tight_layout()
-            plt.show()
-        else:
-            # Interactive Slider
-            fig, ax = plt.subplots(figsize=figsize)
-            plt.subplots_adjust(bottom=0.25)
-            im = ax.imshow(masked(0), origin='lower', extent=extent,
-                        cmap=cmap_obj, vmin=vmin, vmax=vmax)
-            plt.colorbar(im, ax=ax, label='Temperature')
-            title = ax.set_title('t = 0.0000')
-            ax.set_xlabel('x')
-            ax.set_ylabel('y')
-            
-            if sensors is not None:
-                sx, sy = zip(*sensors)
-                ax.scatter(sx, sy, color='cyan', marker='x', s=50, label='Thermocouples')
-                ax.legend(loc='upper right')
-            
-            # Create slider axis and slider
-            ax_slider = plt.axes([0.15, 0.1, 0.65, 0.03])
-            time_slider = Slider(
-                ax=ax_slider,
-                label='Time Step',
-                valmin=0,
-                valmax=self.nt - 1,
-                valinit=0,
-                valstep=1
-            )
+                if sensors is not None:
+                    sx, sy = zip(*sensors)
+                    ax.scatter(sx, sy, color='cyan', marker='x', s=50, label='Thermocouples')
+                    ax.legend()
+                    
+                plt.tight_layout()
+                plt.show()
+            else:
+                # Interactive Slider
+                fig, ax = plt.subplots(figsize=figsize)
+                plt.subplots_adjust(bottom=0.25)
+                im = ax.imshow(masked(0), origin='lower', extent=extent,
+                            cmap=cmap_obj, norm=norm)
+                plt.colorbar(im, ax=ax, label='Temperature')
+                title = ax.set_title('t = 0.0000')
+                ax.set_xlabel('x')
+                ax.set_ylabel('y')
+                
+                if sensors is not None:
+                    sx, sy = zip(*sensors)
+                    ax.scatter(sx, sy, color='cyan', marker='x', s=50, label='Thermocouples')
+                    ax.legend(loc='upper right')
+                
+                # Create slider axis and slider
+                ax_slider = plt.axes([0.15, 0.1, 0.65, 0.03])
+                time_slider = Slider(
+                    ax=ax_slider,
+                    label='Time Step',
+                    valmin=0,
+                    valmax=self.nt - 1,
+                    valinit=0,
+                    valstep=1
+                )
 
-            # Update function for the slider
-            def update(val):
-                t = int(time_slider.val)
-                im.set_data(masked(t))
-                title.set_text(f't = {t * self.dt:.4f}')
-                fig.canvas.draw_idle()
+                # Update function for the slider
+                def update(val):
+                    t = int(time_slider.val)
+                    im.set_data(masked(t))
+                    title.set_text(f't = {t * self.dt:.4f}')
+                    fig.canvas.draw_idle()
 
-            time_slider.on_changed(update)
-            plt.show()
-            # Return the slider object to prevent it from being garbage collected
-            return time_slider
+                time_slider.on_changed(update)
+                plt.show()
+                # Return the slider object to prevent it from being garbage collected
+                return time_slider
 
 
     def export_sparse(self, points, filename, step=1, noise_std=0.0):
