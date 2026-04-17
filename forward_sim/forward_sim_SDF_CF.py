@@ -9,7 +9,7 @@ import matplotlib
 matplotlib.use('TkAgg')  # macOS-friendly backend
 
 class Plate:
-    def __init__(self, size, SDF, initial_temp, t_max, alpha, spatial_step, nt):
+    def __init__(self, size, SDF, initial_temp, t_max, alpha, q, spatial_step, nt):
         """
         Initializes a 2D plate for forward simulation of the heat equation
 
@@ -35,6 +35,7 @@ class Plate:
         self.SDF = SDF
         self.t_max = t_max
         self.alpha = alpha
+        self.q = q
 
         # Calculate nx from spatial_step and size
         self.nx = int(size / spatial_step) + 1
@@ -59,6 +60,28 @@ class Plate:
         # Precompute SDF values for the grid
         SDF_values = self.SDF(self.coords)
         self.shape_mask = SDF_values <= 0.0  # interior + boundary
+        self.boundary_mask = (-2*self.dx < SDF_values) & (SDF_values <= 0.0)
+        self.interior_mask = self.shape_mask & ~self.boundary_mask
+
+        # Precompute normalized SDF gradients for BC enforcement
+        sdf_grad_x = (self.SDF(self.coords + np.array([self.dx, 0])) - self.SDF(self.coords - np.array([self.dx, 0]))) / (2 * self.dx)
+        sdf_grad_y = (self.SDF(self.coords + np.array([0, self.dx])) - self.SDF(self.coords - np.array([0, self.dx]))) / (2 * self.dx)
+        grad_norm = np.sqrt(sdf_grad_x**2 + sdf_grad_y**2) + 1e-8  # Avoid division by zero
+        self.sdf_grad_x = sdf_grad_x / grad_norm 
+        self.sdf_grad_y = sdf_grad_y / grad_norm
+
+        # Precompute flux value and interior neighbor coordinates for Neumann BC
+        self.flux = q / alpha
+        boundary_indices = np.where(self.boundary_mask)
+        # For each boundary point, compute coords one step inward (opposite of normal)
+        boundary_x = self.coords[self.boundary_mask, 0]
+        boundary_y = self.coords[self.boundary_mask, 1]
+        inward_normal_x = -self.sdf_grad_x[self.boundary_mask]
+        inward_normal_y = -self.sdf_grad_y[self.boundary_mask]
+        self.interior_neighbor_coords = np.stack([
+            boundary_x + self.dx * inward_normal_x,
+            boundary_y + self.dx * inward_normal_y
+        ], axis=1)
 
         # Initialize temperature array
         self.temperature = np.zeros((self.nt, self.nx, self.nx))
@@ -73,6 +96,7 @@ class Plate:
             self.coords[self.shape_mask]
         )
 
+
     def step(self, t):
         """
         Advances the simulation by one time step using the finite difference method.
@@ -85,18 +109,38 @@ class Plate:
         T = self.temperature[t - 1]
         T_new = np.copy(T)
 
-        # Computes Laplacian. np.roll is cyclical, so SDF should not touch the boundaries
-        d2T_dx2 = (np.roll(T, -1, axis=1) - 2 * T + np.roll(T, 1, axis=1)) / self.dx**2
-        d2T_dy2 = (np.roll(T, -1, axis=0) - 2 * T + np.roll(T, 1, axis=0)) / self.dx**2
+        # Compute Laplacian with ghost cells where neighbors would go outside
+        # X-direction: check if rolled neighbors are outside domain
+        T_right = np.roll(T, -1, axis=1)  # values from (i, j+1)
+        neighbor_right_mask = np.roll(self.shape_mask, -1, axis=1)  # is (i, j+1) inside?
+        # Where neighbor is outside, use ghost cell
+        T_right[~neighbor_right_mask] = T[~neighbor_right_mask] + self.flux * self.dx * self.sdf_grad_x[~neighbor_right_mask]
+        
+        T_left = np.roll(T, 1, axis=1)   # values from (i, j-1)
+        neighbor_left_mask = np.roll(self.shape_mask, 1, axis=1)  # is (i, j-1) inside?
+        T_left[~neighbor_left_mask] = T[~neighbor_left_mask] + self.flux * self.dx * self.sdf_grad_x[~neighbor_left_mask]
+        
+        d2T_dx2 = (T_right - 2 * T + T_left) / self.dx**2
+        
+        # Y-direction: check if rolled neighbors are outside domain
+        T_down = np.roll(T, -1, axis=0)  # values from (i+1, j)
+        neighbor_down_mask = np.roll(self.shape_mask, -1, axis=0)
+        T_down[~neighbor_down_mask] = T[~neighbor_down_mask] + self.flux * self.dx * self.sdf_grad_y[~neighbor_down_mask]
+        
+        T_up = np.roll(T, 1, axis=0)     # values from (i-1, j)
+        neighbor_up_mask = np.roll(self.shape_mask, 1, axis=0)
+        T_up[~neighbor_up_mask] = T[~neighbor_up_mask] + self.flux * self.dx * self.sdf_grad_y[~neighbor_up_mask]
+        
+        d2T_dy2 = (T_down - 2 * T + T_up) / self.dx**2
 
-        # Update interior points
+        # Update all points in shape_mask
         T_new[self.shape_mask] += (
             self.alpha
             * self.dt
             * (d2T_dx2[self.shape_mask] + d2T_dy2[self.shape_mask])
         )
 
-        # Enforce BCs: T=0 at boundary (and outside)
+        # T=0 outside boundary
         T_new[~self.shape_mask] = 0.0
 
         self.temperature[t] = T_new
@@ -306,8 +350,9 @@ def sdf_union(p, sdf1, sdf2):
 
 if __name__ == "__main__":
     size = 2.0
-    t_max = 5.0
+    t_max = 40.0
     alpha = 0.01
+    q = 1
     spatial_step = 0.01
     nt = 18751
     sigma = size / 6
@@ -334,9 +379,12 @@ if __name__ == "__main__":
         initial_temp=initial_temp,
         t_max=t_max,
         alpha=alpha,
+        q=q,
         spatial_step=spatial_step,
         nt=nt,
     )
     plate.run()
     # plate.export_sparse(thermocouple_locations, 'training_data/T_plate.csv', step=6)
+    print(f"avg. initial temp: {plate.temperature[0].mean()}")
+    print(f"avg. final temp: {plate.temperature[-1].mean()}")
     plate.visualize(sensors=thermocouple_locations)
