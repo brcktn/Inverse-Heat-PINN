@@ -114,7 +114,7 @@ class Plate:
         T_right = np.roll(T, -1, axis=1)  # values from (i, j+1)
         neighbor_right_mask = np.roll(self.shape_mask, -1, axis=1)  # is (i, j+1) inside?
         # Where neighbor is outside, use ghost cell
-        T_right[~neighbor_right_mask] = T[~neighbor_right_mask] + self.flux * self.dx * self.sdf_grad_x[~neighbor_right_mask]
+        T_right[~neighbor_right_mask] = T[~neighbor_right_mask] - self.flux * self.dx * self.sdf_grad_x[~neighbor_right_mask]
         
         T_left = np.roll(T, 1, axis=1)   # values from (i, j-1)
         neighbor_left_mask = np.roll(self.shape_mask, 1, axis=1)  # is (i, j-1) inside?
@@ -125,7 +125,7 @@ class Plate:
         # Y-direction: check if rolled neighbors are outside domain
         T_down = np.roll(T, -1, axis=0)  # values from (i+1, j)
         neighbor_down_mask = np.roll(self.shape_mask, -1, axis=0)
-        T_down[~neighbor_down_mask] = T[~neighbor_down_mask] + self.flux * self.dx * self.sdf_grad_y[~neighbor_down_mask]
+        T_down[~neighbor_down_mask] = T[~neighbor_down_mask] - self.flux * self.dx * self.sdf_grad_y[~neighbor_down_mask]
         
         T_up = np.roll(T, 1, axis=0)     # values from (i-1, j)
         neighbor_up_mask = np.roll(self.shape_mask, 1, axis=0)
@@ -350,9 +350,9 @@ def sdf_union(p, sdf1, sdf2):
 
 if __name__ == "__main__":
     size = 2.0
-    t_max = 40.0
+    t_max = 5.0
     alpha = 0.01
-    q = 1
+    q = 0.5
     spatial_step = 0.01
     nt = 18751
     sigma = size / 6
@@ -362,7 +362,7 @@ if __name__ == "__main__":
     )
 
     rect_sdf = lambda p: sdf_box(p, top_left=[-0.75, 0.75], bottom_right=[-0.25, -0.75])
-    circ_sdf = lambda p: sdf_circle(p, center=[0, 0.375], radius=0.5)
+    circ_sdf = lambda p: sdf_circle(p, center=[0.0, 0.375], radius=0.5)
     SDF = lambda p: sdf_union(p, rect_sdf, circ_sdf)
 
     thermocouple_locations = [
@@ -384,7 +384,7 @@ if __name__ == "__main__":
         nt=nt,
     )
     plate.run()
-    # plate.export_sparse(thermocouple_locations, 'training_data/T_plate.csv', step=6)
+    plate.export_sparse(thermocouple_locations, 'training_data/SDF_CF.csv', step=6)
     print(f"avg. initial temp: {plate.temperature[0].mean()}")
     print(f"avg. final temp: {plate.temperature[-1].mean()}")
     plate.visualize(sensors=thermocouple_locations)
