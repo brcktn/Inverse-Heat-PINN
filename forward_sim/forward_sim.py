@@ -313,7 +313,15 @@ if __name__ == "__main__":
         (0.25, -0.45),
     ]
 
+    validation_locations = [
+        (-0.333, -0.333),
+        (0.333, 0.333),
+        (-0.333, 0.333),
+        (0.333, -0.333),
+    ]
+
     plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, spatial_step, nt)
     plate.run()
     plate.export_sparse(thermocouple_locations, 'training_data/dual_gaussian_4.csv', step=6)
-    plate.animate(points=thermocouple_locations)
+    plate.export_sparse(validation_locations, 'training_data/dual_gaussian_4_validation.csv', step=240)
+    plate.animate(points=validation_locations)

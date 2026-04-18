@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
@@ -16,14 +16,39 @@
 \maketitle
 
 \section{Background}
+In many scientific and engineering applications, it is desired to know the global temperature distribution of a system, however, only a limited number of temperature measurements are available. This project explores the use of Physics-Informed Neural Networks (PINNs) to solve the inverse heat equation problem for a flat plate. This project explores square plates and plates of arbitrary shape defined by a signed distance function (SDF). It also explores two different types of boundary conditions: constant temperature and constant flux. The goal is to train a PINN to predict the temperature distribution across the plate given a limited number of temperature measurements and the governing physics of heat conduction.
 
 \section{Dataset}
+The dataset consists of temperature measurements taken from a sparse set of points on the plate. In reality, these measurements could be obtained from thermocouples placed at specific locations. For this project, datasets are generated using numerical simulations of the heat equation under various conditions, including different plate geometries, boundary conditions, and noise levels. Each dataset includes the spatial and temporal coordinates of the measurement points, and the corresponding temperature values.
 
 \section{Approach}
-
 \subsection{Model Architecture}
+The PINN architecture consists of a fully connected feedforward neural network that takes coordinates (x, y, t) as input and outputs the predicted temperature (T). We use a network with 3 hidden layers of 64 neurons each. A SiLU activation function is used so that a 2nd derivative can be calculated as needed for the loss functions.
+
 \subsection{Loss Functions}
+The loss function for training the PINN consists of three components:
+\subsubsection{Data Loss}
+This term measures the mean squared error between the predicted temperatures and the observed temperatures at the measurement points from the sparse dataset:
+\[L_{\text{data}} = \frac{1}{N} \sum_{i=1}^{N} (T_{\text{pred}}(x_i, y_i, t_i) - T_{\text{obs}}(x_i, y_i, t_i))^2\]
+
+\subsubsection{Physics Loss}
+This term enforces the governing physics of heat conduction by penalizing deviations from the heat equation at a randomly sampled set of points in the domain:
+\[L_{\text{physics}} = \frac{1}{M} \sum_{j=1}^{M} \left( \frac{\partial T_{\text{pred}}}{\partial t}(x_j, y_j, t_j) - \alpha \left( \frac{\partial^2 T_{\text{pred}}}{\partial x^2}(x_j, y_j, t_j) + \frac{\partial^2 T_{\text{pred}}}{\partial y^2}(x_j, y_j, t_j) \right) \right)^2\]
+where \(\alpha\) is the thermal diffusivity of the material.
+\subsubsection{Boundary Loss}
+This term enforces the boundary conditions of the problem, calculated from a randomly sampled set of points on the boundary of the domain. For constant temperature boundaries, the loss is calculated as:
+\[L_{\text{boundary}} = \frac{1}{P} \sum_{k=1}^{P} \left(T_{\text{pred}}(x_k, y_k, t_k) - T_{\text{boundary}}\right)^2\]
+For constant flux boundaries, the loss is calculated as:
+\[
+L_{\text{boundary}} = \frac{1}{P} \sum_{k=1}^{P}
+\left(
+\frac{\partial T_{\text{pred}}}{\partial n}(x_k, y_k, t_k)
+- q_{\text{boundary}}
+\right)^2
+\]
+where \(q_{\text{boundary}}\) is the prescribed normal temperature gradient (i.e., the heat flux).
 \subsection{Training Procedure}
 
 \section{Results}
+\section{Futher Exploration}
 \end{document}
