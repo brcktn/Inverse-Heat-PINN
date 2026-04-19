@@ -48,7 +48,29 @@ L_{\text{boundary}} = \frac{1}{P} \sum_{k=1}^{P}
 \]
 where \(q_{\text{boundary}}\) is the prescribed normal temperature gradient (i.e., the heat flux).
 \subsection{Training Procedure}
+The PINN is trained using an Adam optimizer to minimize the combined loss function:
+\[L = L_{\text{data}} + L_{\text{physics}} + L_{\text{boundary}}\]
+For most experiments, the model was trained for 50-100 epochs with a learning rate of 0.001. 
 
 \section{Results}
-\section{Futher Exploration}
+The model was evaluated on a separate validation set of temperature measurements at locations not included in the training data. A percentage L2 error metric was used to quantify the accuracy of the predictions. Results of various configurations of plate geometry, boundary conditions, and noise levels are presented in the following table:
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\shortstack{\textbf{Plate}\\\textbf{Geometry}} &
+\shortstack{\textbf{Boundary}\\\textbf{Conditions}} &
+\shortstack{\textbf{Initial}\\\textbf{Conditions}} &
+\shortstack{\textbf{\# Measurement}\\\textbf{Locations}} &
+\shortstack{\textbf{Noise}\\\textbf{Level}} &
+\shortstack{\textbf{L2 Error}\\\textbf{(\%)}} \\
+\hline
+Square & Constant Temperature & 2 Gaussians & 4 & 0\% & \% \\
+Square & Constant Temperature & 2 Gaussians & 8 & 10\% & 11.25\% \\
+\hline
+\end{tabular}
+\caption{L2 error percentages for different configurations of plate geometry, boundary conditions, and noise
+levels.}
+\end{table}
+\section{Further Exploration}
 \end{document}

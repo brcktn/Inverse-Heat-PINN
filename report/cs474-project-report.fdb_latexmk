@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1776480336.85421 "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" "cs474-project-report.pdf" "cs474-project-report" 1776480337.16757 0
-  "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" 1776480336.58422 3676 f0d370726664221a59e569110358c9e1 ""
+["pdflatex"] 1776556317.6749 "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" "cs474-project-report.pdf" "cs474-project-report" 1776556317.98231 0
+  "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" 1776556317.45099 4927 db9246b6368811c162a353ebba8314c7 ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -89,9 +89,9 @@
   "/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1744083249 79187 04b17f8738f833a5a5f7867124477b59 ""
   "/usr/local/texlive/2025basic/texmf-var/web2c/pdftex/pdflatex.fmt" 1744083260 2663840 01336c1055226b17c0f3adc181c62e8d ""
   "/usr/local/texlive/2025basic/texmf.cnf" 1741448314 628 81d1ada0f601fb1ffa62f1323192d946 ""
-  "cs474-project-report.aux" 1776480337.12592 1453 1cc35744f639543eb8168dee02050f52 "pdflatex"
-  "cs474-project-report.out" 1776480337.12661 1280 17dd4a041d75a4dcb3d4ea7a6bfcfa10 "pdflatex"
-  "cs474-project-report.tex" 1776480336.58422 3676 f0d370726664221a59e569110358c9e1 ""
+  "cs474-project-report.aux" 1776556317.93969 1670 4077b5a39fe4c691ced2540749d9c1d8 "pdflatex"
+  "cs474-project-report.out" 1776556317.94016 1285 cd66d635314c601b111e3eb3f81e08c0 "pdflatex"
+  "cs474-project-report.tex" 1776556317.45099 4927 db9246b6368811c162a353ebba8314c7 ""
   (generated)
   "cs474-project-report.aux"
   "cs474-project-report.log"
