@@ -6,10 +6,11 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{cite}
+\usepackage{caption}
 
-\title{\vspace{-2cm}CS 474 Project Report}
+\title{\vspace{-3cm}CS 474 Project Report}
 \author{Brock Gregersen}
-\date{\vspace{-0.5cm}\today}
+\date{\vspace{-0.25cm}\today}
 
 \begin{document}
 
@@ -19,7 +20,23 @@
 In many scientific and engineering applications, it is desired to know the global temperature distribution of a system, however, only a limited number of temperature measurements are available. This project explores the use of Physics-Informed Neural Networks (PINNs) to solve the inverse heat equation problem for a flat plate. This project explores square plates and plates of arbitrary shape defined by a signed distance function (SDF). It also explores two different types of boundary conditions: constant temperature and constant flux. The goal is to train a PINN to predict the temperature distribution across the plate given a limited number of temperature measurements and the governing physics of heat conduction.
 
 \section{Dataset}
-The dataset consists of temperature measurements taken from a sparse set of points on the plate. In reality, these measurements could be obtained from thermocouples placed at specific locations. For this project, datasets are generated using numerical simulations of the heat equation under various conditions, including different plate geometries, boundary conditions, and noise levels. Each dataset includes the spatial and temporal coordinates of the measurement points, and the corresponding temperature values.
+The dataset consists of temperature measurements taken from a sparse set of points on the plate. In reality, these measurements could be obtained from thermocouples placed at specific locations. For this project, datasets are generated using numerical simulations of the heat equation under various conditions, including different plate geometries, boundary conditions, and noise levels. Each dataset includes the spatial and temporal coordinates of the measurement points, and the corresponding temperature values. Figure~\ref{fig:fig1} shows an example of sparse temperature measurements used for training.
+
+\begin{figure}[ht]
+    \begin{minipage}{0.35\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{plots/dual_gaussian_4.png}
+        \captionof{figure}{First independent figure.}
+        \label{fig:fig1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{plots/dual_gaussian_output.png}
+        \captionof{figure}{Second independent figure.}
+        \label{fig:fig2}
+    \end{minipage}
+\end{figure}
 
 \section{Approach}
 \subsection{Model Architecture}
@@ -36,17 +53,15 @@ This term enforces the governing physics of heat conduction by penalizing deviat
 \[L_{\text{physics}} = \frac{1}{M} \sum_{j=1}^{M} \left( \frac{\partial T_{\text{pred}}}{\partial t}(x_j, y_j, t_j) - \alpha \left( \frac{\partial^2 T_{\text{pred}}}{\partial x^2}(x_j, y_j, t_j) + \frac{\partial^2 T_{\text{pred}}}{\partial y^2}(x_j, y_j, t_j) \right) \right)^2\]
 where \(\alpha\) is the thermal diffusivity of the material.
 \subsubsection{Boundary Loss}
-This term enforces the boundary conditions of the problem, calculated from a randomly sampled set of points on the boundary of the domain. For constant temperature boundaries, the loss is calculated as:
-\[L_{\text{boundary}} = \frac{1}{P} \sum_{k=1}^{P} \left(T_{\text{pred}}(x_k, y_k, t_k) - T_{\text{boundary}}\right)^2\]
-For constant flux boundaries, the loss is calculated as:
+This term enforces boundary conditions at randomly sampled boundary points. For constant temperature and constant flux conditions respectively, the loss is defined as:
 \[
-L_{\text{boundary}} = \frac{1}{P} \sum_{k=1}^{P}
-\left(
-\frac{\partial T_{\text{pred}}}{\partial n}(x_k, y_k, t_k)
-- q_{\text{boundary}}
-\right)^2
+\begin{aligned}
+L_{\text{boundary}} &= \frac{1}{P}\sum_{k=1}^{P}\left(T_{\text{pred}}(x_k,y_k,t_k)-T_{\text{boundary}}\right)^2
+\qquad
+L_{\text{boundary}} &= \frac{1}{P}\sum_{k=1}^{P}\left(\frac{\partial T_{\text{pred}}}{\partial n}(x_k,y_k,t_k)-q_{\text{boundary}}\right)^2
+\end{aligned}
 \]
-where \(q_{\text{boundary}}\) is the prescribed normal temperature gradient (i.e., the heat flux).
+where \(q_{\text{boundary}}\) is the prescribed normal temperature gradient (heat flux).
 \subsection{Training Procedure}
 The PINN is trained using an Adam optimizer to minimize the combined loss function:
 \[L = L_{\text{data}} + L_{\text{physics}} + L_{\text{boundary}}\]
@@ -54,7 +69,7 @@ For most experiments, the model was trained for 50-100 epochs with a learning ra
 
 \section{Results}
 The model was evaluated on a separate validation set of temperature measurements at locations not included in the training data. A percentage L2 error metric was used to quantify the accuracy of the predictions. Results of various configurations of plate geometry, boundary conditions, and noise levels are presented in the following table:
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
@@ -65,12 +80,13 @@ The model was evaluated on a separate validation set of temperature measurements
 \shortstack{\textbf{Noise}\\\textbf{Level}} &
 \shortstack{\textbf{L2 Error}\\\textbf{(\%)}} \\
 \hline
-Square & Constant Temperature & 2 Gaussians & 4 & 0\% & \% \\
+Square & Constant Temperature & 1 Gaussian & 8 & 0\% & 1.67\% \\
+Square & Constant Temperature & 2 Gaussians & 4 & 0\% & Error: 10.87\% \\
+Square & Constant Temperature & 2 Gaussians & 8 & 0\% & 7.46\% \\
 Square & Constant Temperature & 2 Gaussians & 8 & 10\% & 11.25\% \\
 \hline
 \end{tabular}
 \caption{L2 error percentages for different configurations of plate geometry, boundary conditions, and noise
 levels.}
 \end{table}
-\section{Further Exploration}
 \end{document}

@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 class Plate():
     def __init__(self, initial_temperature, size, t_max, alpha, spatial_step, nt):
@@ -320,7 +321,7 @@ if __name__ == "__main__":
         (0.8, -0.8),
     ]
 
-    plate = Plate(gaussian_initial_temperature, size, t_max, alpha, spatial_step, nt)
+    plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, spatial_step, nt)
     plate.run()
     plate.export_sparse(thermocouple_locations, 'training_data/gaussian_8.csv', step=6)
     plate.export_sparse(validation_locations, 'training_data/gaussian_validation.csv', step=240)

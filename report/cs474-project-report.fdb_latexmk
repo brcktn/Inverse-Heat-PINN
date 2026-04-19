@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1776556317.6749 "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" "cs474-project-report.pdf" "cs474-project-report" 1776556317.98231 0
-  "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" 1776556317.45099 4927 db9246b6368811c162a353ebba8314c7 ""
+["pdflatex"] 1776565897.09189 "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" "cs474-project-report.pdf" "cs474-project-report" 1776565897.83611 0
+  "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" 1776565896.87989 5572 9b0843b0a9d5ee259db1d79d6a76b778 ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -62,6 +62,8 @@
   "/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/atveryend-ltx.sty" 1738182759 2378 14b657ee5031da98cf91648f19642694 ""
   "/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/inputenc.sty" 1738182759 5048 0270515b828149155424600fd2d58ac5 ""
   "/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/size10.clo" 1738182759 8448 5cf247d4bd0c7d5d711bbbdf111fae2e ""
+  "/usr/local/texlive/2025basic/texmf-dist/tex/latex/caption/caption.sty" 1696191071 56128 c2ccf1a29d78c33bc553880402e4fb9a ""
+  "/usr/local/texlive/2025basic/texmf-dist/tex/latex/caption/caption3.sty" 1696191071 72619 ee90b6612147680fd73c3b1406a74245 ""
   "/usr/local/texlive/2025basic/texmf-dist/tex/latex/cite/cite.sty" 1425427964 26218 19edeff8cdc2bcb704e8051dc55eb5a7 ""
   "/usr/local/texlive/2025basic/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty" 1579991033 13886 d1306dcf79a944f6988e688c1785f9ce ""
   "/usr/local/texlive/2025basic/texmf-dist/tex/latex/etoolbox/etoolbox.sty" 1739306980 46850 d87daedc2abdc653769a6f1067849fe0 ""
@@ -89,9 +91,11 @@
   "/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1744083249 79187 04b17f8738f833a5a5f7867124477b59 ""
   "/usr/local/texlive/2025basic/texmf-var/web2c/pdftex/pdflatex.fmt" 1744083260 2663840 01336c1055226b17c0f3adc181c62e8d ""
   "/usr/local/texlive/2025basic/texmf.cnf" 1741448314 628 81d1ada0f601fb1ffa62f1323192d946 ""
-  "cs474-project-report.aux" 1776556317.93969 1670 4077b5a39fe4c691ced2540749d9c1d8 "pdflatex"
-  "cs474-project-report.out" 1776556317.94016 1285 cd66d635314c601b111e3eb3f81e08c0 "pdflatex"
-  "cs474-project-report.tex" 1776556317.45099 4927 db9246b6368811c162a353ebba8314c7 ""
+  "cs474-project-report.aux" 1776565897.79618 2064 fc44bc3d567c5583f2f4a2fb6bfaf7d2 "pdflatex"
+  "cs474-project-report.out" 1776565897.79669 1143 b447e695c8cc770cb7baddd60606b6dc "pdflatex"
+  "cs474-project-report.tex" 1776565896.87989 5572 9b0843b0a9d5ee259db1d79d6a76b778 ""
+  "plots/dual_gaussian_4.png" 1776565530.18679 125359 7c3f2c078128e59677000326f611cf3d ""
+  "plots/dual_gaussian_output.png" 1776565615.09905 198472 6d24233e1ea923dc2e6384f037e18fd4 ""
   (generated)
   "cs474-project-report.aux"
   "cs474-project-report.log"
