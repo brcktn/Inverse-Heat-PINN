@@ -332,7 +332,7 @@ if __name__ == "__main__":
     size = 2.0
     t_max = 5.0
     alpha = 0.01
-    q = 0.005
+    q = 0.0
     spatial_step = 0.02 # nx = 101
     nt = 18751  # w/ step=6, gives dt = 0.0016
     noise_std = 0.01
@@ -348,9 +348,17 @@ if __name__ == "__main__":
         (0.75, -0.75)
     ]
 
+    validation_locations = [
+        (0.5, 0),
+        (-0.5, 0),
+        (0, 0.5),
+        (0, -0.5)
+    ]
+
     plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, q, spatial_step, nt)
     plate.run()
     print(f"average temperature at first time step: {plate.temperature[0].mean():.4f}")
     print(f"average temperature at last time step: {plate.temperature[-1].mean():.4f}")
     plate.export_sparse(thermocouple_locations, 'training_data/constant_flux_DG.csv', step=6)
+    plate.export_sparse(validation_locations, 'training_data/constant_flux_DG_validation.csv', step=240)
     plate.animate(points=thermocouple_locations)

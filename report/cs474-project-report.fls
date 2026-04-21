@@ -174,8 +174,8 @@ INPUT ./plots/dual_gaussian_output.png
 INPUT ./plots/dual_gaussian_output.png
 INPUT ./plots/dual_gaussian_output.png
 INPUT /usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
-INPUT /usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map
 INPUT /usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
+INPUT /usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map
 INPUT cs474-project-report.aux
 INPUT ./cs474-project-report.out
 INPUT ./cs474-project-report.out

@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1776565897.09189 "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" "cs474-project-report.pdf" "cs474-project-report" 1776565897.83611 0
-  "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" 1776565896.87989 5572 9b0843b0a9d5ee259db1d79d6a76b778 ""
+["pdflatex"] 1776810641.38961 "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" "cs474-project-report.pdf" "cs474-project-report" 1776810642.16577 0
+  "/Users/brcktn/Desktop/Deep Learning/Inverse-Heat-PINN/report/cs474-project-report.tex" 1776810641.07325 7082 e0e40559b66f14e01cdbda8ba0fe465e ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -91,9 +91,9 @@
   "/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1744083249 79187 04b17f8738f833a5a5f7867124477b59 ""
   "/usr/local/texlive/2025basic/texmf-var/web2c/pdftex/pdflatex.fmt" 1744083260 2663840 01336c1055226b17c0f3adc181c62e8d ""
   "/usr/local/texlive/2025basic/texmf.cnf" 1741448314 628 81d1ada0f601fb1ffa62f1323192d946 ""
-  "cs474-project-report.aux" 1776565897.79618 2064 fc44bc3d567c5583f2f4a2fb6bfaf7d2 "pdflatex"
-  "cs474-project-report.out" 1776565897.79669 1143 b447e695c8cc770cb7baddd60606b6dc "pdflatex"
-  "cs474-project-report.tex" 1776565896.87989 5572 9b0843b0a9d5ee259db1d79d6a76b778 ""
+  "cs474-project-report.aux" 1776810642.12255 2385 bca279b5272dfd88f4280b977c3e0d2c "pdflatex"
+  "cs474-project-report.out" 1776810642.12318 1230 c228f0b4b9e95cebbd62dea31066cfbc "pdflatex"
+  "cs474-project-report.tex" 1776810641.07325 7082 e0e40559b66f14e01cdbda8ba0fe465e ""
   "plots/dual_gaussian_4.png" 1776565530.18679 125359 7c3f2c078128e59677000326f611cf3d ""
   "plots/dual_gaussian_output.png" 1776565615.09905 198472 6d24233e1ea923dc2e6384f037e18fd4 ""
   (generated)
