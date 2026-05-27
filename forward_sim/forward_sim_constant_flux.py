@@ -378,14 +378,14 @@ if __name__ == "__main__":
 
     thermocouple_locations = [
         (0,0),
-        (-1, -1),
-        (-1, 0),
-        (-1, 1),
-        (0, -1),
-        (0, 1),
-        (1, -1),
-        (1, 0),
-        (1, 1)
+        (-0.5, -0.5),
+        (-0.5, 0),
+        (-0.5, 0.5),
+        (0, -0.5),
+        (0, 0.5),
+        (0.5, -0.5),
+        (0.5, 0),
+        (0.5, 0.5)
     ]
 
     plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, q, spatial_step, nt)
