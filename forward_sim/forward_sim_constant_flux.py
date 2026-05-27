@@ -143,6 +143,45 @@ class Plate():
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
 
+
+    def export_random(self, filename, num_points=1000, noise_std=0.0):
+        """
+        Export the temperature data at randomly sampled points and times to a CSV file.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the CSV file to which the data will be exported.
+        num_points : int, optional
+            The number of random points to sample (default is 1000).
+        noise_std : float, optional
+            The standard deviation of the Gaussian noise to add to the temperature data (default is 0.0).
+        """
+        import pandas as pd
+
+        data = []
+        for _ in range(num_points):
+            ix = np.random.randint(0, self.nx)
+            iy = np.random.randint(0, self.nx)
+            it = np.random.randint(0, self.nt)
+
+            x = -self.size / 2 + ix * self.dx
+            y = -self.size / 2 + iy * self.dx
+            time = it * self.dt
+            temperature = self.temperature[it, iy, ix] + np.random.normal(0, noise_std)
+
+            data.append({
+                'sensor_id': 0,
+                'x': x,
+                'y': y,
+                'time': time,
+                'temperature': temperature
+            })
+
+        df = pd.DataFrame(data)
+        df.to_csv(filename, index=False)
+
+
     def export_large(self, filename,xy_step=1, t_step=1):
         """
         Export the full temperature data for all grid points and time steps to a CSV file.
@@ -339,26 +378,19 @@ if __name__ == "__main__":
 
     thermocouple_locations = [
         (0,0),
-        (-0.5, -0.25),
-        (0.45, 0.35),
-        (0.25, -0.45),
-        (0.75, 0.75),
-        (-0.75, -0.75),
-        (-0.75, 0.75),
-        (0.75, -0.75)
-    ]
-
-    validation_locations = [
-        (0.5, 0),
-        (-0.5, 0),
-        (0, 0.5),
-        (0, -0.5)
+        (-.9, -.9),
+        (-.9, 0),
+        (-.9, .9),
+        (0, -.9),
+        (0, .9),
+        (.9, -.9),
+        (.9, 0),
+        (.9, .9)
     ]
 
     plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, q, spatial_step, nt)
     plate.run()
-    print(f"average temperature at first time step: {plate.temperature[0].mean():.4f}")
-    print(f"average temperature at last time step: {plate.temperature[-1].mean():.4f}")
-    plate.export_sparse(thermocouple_locations, 'training_data/constant_flux_DG.csv', step=6)
-    plate.export_sparse(validation_locations, 'training_data/constant_flux_DG_validation.csv', step=240)
+    plate.export_sparse(points=thermocouple_locations, filename="training_data/insulated_DG.csv", step=6, noise_std=noise_std)
+    plate.export_random(filename="training_data/insulated_DG_val.csv", num_points=1000)
+
     plate.animate(points=thermocouple_locations)
