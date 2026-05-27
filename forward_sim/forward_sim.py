@@ -114,6 +114,39 @@ class Plate():
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
 
+
+    def export_step(self, filename, time):
+        """
+        Export the temperature data for all grid points at the time
+        step closest to the specified time to a CSV file.
+        
+        Parameters
+        ----------
+        filename : str
+            The name of the CSV file to which the data will be exported.
+        time : float
+            The time at which to export the temperature data. The closest time step will be used.
+        """
+        import pandas as pd
+        
+        t = int(round(time / self.dt))
+        data = []
+        for ix in range(self.nx):
+            x = -self.size / 2 + ix * self.dx
+            for iy in range(self.nx):
+                y = -self.size / 2 + iy * self.dx
+                data.append({
+                    'sensor_id': 0,
+                    'x': x,
+                    'y': y,
+                    'time': t * self.dt,
+                    'temperature': self.temperature[t, iy, ix]
+                })
+        
+        df = pd.DataFrame(data)
+        df.to_csv(filename, index=False)
+
+
     def export_large(self, filename,xy_step=1, t_step=1):
         """
         Export the full temperature data for all grid points and time steps to a CSV file.
@@ -321,8 +354,9 @@ if __name__ == "__main__":
         (0.8, -0.8),
     ]
 
-    plate = Plate(dual_gaussian_initial_temperature, size, t_max, alpha, spatial_step, nt)
+    plate = Plate(square_step_initial_temperature, size, t_max, alpha, spatial_step, nt)
     plate.run()
-    plate.export_sparse(thermocouple_locations, 'training_data/gaussian_8.csv', step=6)
-    plate.export_sparse(validation_locations, 'training_data/gaussian_validation.csv', step=240)
-    plate.animate(points=validation_locations)
+    # plate.export_sparse(thermocouple_locations, 'training_data/gaussian_8.csv', step=6)
+    plate.export_sparse(validation_locations, 'training_data/SS_val.csv', step=240)
+    plate.export_step('training_data/SS_2500ms.csv', time=2.5)
+    plate.animate()
